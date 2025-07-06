@@ -37,11 +37,17 @@ public class InventoryManager implements IInventoryManager {
         item.setQuantity(item.getQuantity()+qty);
     }
     public  List<InventoryRecord> listLowStock(){
+        List<InventoryRecord> thresholdItems= new LinkedList<>();
+        List<String> list= inventory.keySet();
+        for (String sku: list){
+            InventoryRecord item = inventory.get(sku);
+            if(item.getQuantity()<item.getReorderThreshold()){
+                thresholdItems.add(item);
+            }
+        }
 
-        List<String> list= ;
 
-
-        return null;
+        return thresholdItems;
     }
 
 }

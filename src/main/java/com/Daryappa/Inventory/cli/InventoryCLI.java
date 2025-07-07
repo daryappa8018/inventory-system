@@ -1,9 +1,12 @@
 package com.Daryappa.Inventory.cli;
 
+import com.Daryappa.Inventory.ds.HashTable;
 import com.Daryappa.Inventory.model.InventoryRecord;
 import com.Daryappa.Inventory.model.InsufficientStockException;
 import com.Daryappa.Inventory.model.ItemNotFoundException;
 import com.Daryappa.Inventory.service.InventoryManager;
+import com.Daryappa.Inventory.utils.FileHandler;
+import com.Daryappa.Inventory.utils.TransactionLogger;
 
 import java.util.List;
 import java.util.Scanner;
@@ -11,8 +14,11 @@ import java.util.Scanner;
 public class InventoryCLI {
 
     public static void main(String[] args) {
+
         Scanner scanner = new Scanner(System.in);
         InventoryManager manager = new InventoryManager();
+        HashTable<String, InventoryRecord> loadedInventory = FileHandler.loadInventory("inventory.csv");
+        manager.setInventory(loadedInventory);
 
         System.out.println("📦 Welcome to Inventory Management System");
 
@@ -40,6 +46,8 @@ public class InventoryCLI {
 
                     InventoryRecord item = new InventoryRecord(sku, name, qty, threshold, shelfLife);
                     manager.addItem(item);
+                    TransactionLogger.log("ADDED", sku, qty, name);
+
                     System.out.println("Item added successfully.");
                     break;
 
@@ -52,6 +60,7 @@ public class InventoryCLI {
 
                     try {
                         manager.sellItem(sellSku, sellQty);
+                        TransactionLogger.log("SOLD", sellSku, sellQty, null);
                         System.out.println("Item sold successfully.");
                     } catch (InsufficientStockException | ItemNotFoundException e) {
                         System.out.println(" Error: " + e.getMessage());
@@ -67,6 +76,7 @@ public class InventoryCLI {
 
                     try {
                         manager.receiveStock(receiveSku, receiveQty);
+                        TransactionLogger.log("RESTOCKED", receiveSku, receiveQty, null);
                         System.out.println("Stock updated successfully.");
                     } catch (ItemNotFoundException e) {
                         System.out.println(" Error: " + e.getMessage());
@@ -86,12 +96,13 @@ public class InventoryCLI {
                     break;
 
                 case "exit":
-                    System.out.println(" Exiting Inventory System. Goodbye!");
+                    System.out.println("Saving and Exiting Inventory System. Goodbye!");
+                    FileHandler.saveInventory(manager.getInventory(), "inventory.csv");
                     scanner.close();
                     return;
 
                 default:
-                    System.out.println("❗ Invalid command. Please try again.");
+                    System.out.println("Invalid command. Please try again.");
             }
         }
     }

@@ -6,7 +6,7 @@ import com.Daryappa.Inventory.model.InventoryRecord;
 import java.util.*;
 
 public class HashTable<K,V> {
-
+    public final static int DFAULT_SIZE=16;
     private static class Node<K, V> {
         K key;
         V value;
@@ -29,6 +29,9 @@ public class HashTable<K,V> {
             buckets[i] = new LinkedList<>();
         }
         this.size = 0;
+    }
+    public int getCapacity(){
+        return this.capacity;
     }
 
     private int getBucketIndex(K key) {

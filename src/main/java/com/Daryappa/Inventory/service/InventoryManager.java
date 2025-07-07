@@ -49,5 +49,12 @@ public class InventoryManager implements IInventoryManager {
 
         return thresholdItems;
     }
+    public void setInventory(HashTable<String, InventoryRecord> loadedInventory){
+        inventory = loadedInventory;
+    }
+    public HashTable<String, InventoryRecord> getInventory() {
+        return inventory;
+    }
+
 
 }

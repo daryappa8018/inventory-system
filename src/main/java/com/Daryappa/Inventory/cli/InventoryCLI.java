@@ -9,6 +9,10 @@ import com.Daryappa.Inventory.utils.FileHandler;
 import com.Daryappa.Inventory.utils.LogReader;
 import com.Daryappa.Inventory.utils.TransactionLogger;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,7 +28,7 @@ public class InventoryCLI {
         System.out.println("📦 Welcome to Inventory Management System");
 
         while (true) {
-            System.out.println("\nChoose an option: add | sell | receive | list | export action | export date | exit");
+            System.out.println("\nChoose an option: add | sell | receive | list | suggest restock | suggest expiry | export action | export date | exit");
             System.out.print(">> ");
             String command = scanner.nextLine().trim().toLowerCase();
 
@@ -118,6 +122,70 @@ public class InventoryCLI {
                     break;
 
 
+
+                case "suggest restock":
+                    System.out.print("How many top urgent items to suggest?: ");
+                    int restockCount = Integer.parseInt(scanner.nextLine());
+
+                    List<InventoryRecord> restockSuggestions = manager.suggestRestocks(restockCount);
+                    if (restockSuggestions.isEmpty()) {
+                        System.out.println("✅ All items are sufficiently stocked.");
+                    } else {
+                        System.out.println("🔻 Top " + restockCount + " items needing restock:");
+                        for (InventoryRecord r : restockSuggestions) {
+                            System.out.println(r);
+                        }
+
+                        System.out.print("Do you want to export to CSV? (yes/no): ");
+                        String exportChoice1 = scanner.nextLine().trim().toLowerCase();
+                        if (exportChoice1.equals("yes")) {
+                            List<String[]> exportData = new ArrayList<>();
+                            for (InventoryRecord r : restockSuggestions) {
+                                exportData.add(new String[] {
+                                        LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                                        LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                                        "RESTOCK_SUGGESTION",
+                                        r.getSku(),
+                                        String.valueOf(r.getQuantity()),
+                                        r.getName()
+                                });
+                            }
+                            LogReader.exportToFile(exportData, "RESTOCK_SUGGESTION");
+                        }
+                    }
+                    break;
+
+                case "suggest expiry":
+                    System.out.print("How many soon-to-expire items to suggest?: ");
+                    int expiryCount = Integer.parseInt(scanner.nextLine());
+
+                    List<InventoryRecord> expiringSuggestions = manager.suggestExpiringSoon(expiryCount);
+                    if (expiringSuggestions.isEmpty()) {
+                        System.out.println("✅ No items are close to expiry.");
+                    } else {
+                        System.out.println("⏳ Top " + expiryCount + " expiring soon items:");
+                        for (InventoryRecord r : expiringSuggestions) {
+                            System.out.println(r);
+                        }
+
+                        System.out.print("Do you want to export to CSV? (yes/no): ");
+                        String exportChoice2 = scanner.nextLine().trim().toLowerCase();
+                        if (exportChoice2.equals("yes")) {
+                            List<String[]> exportData = new ArrayList<>();
+                            for (InventoryRecord r : expiringSuggestions) {
+                                exportData.add(new String[] {
+                                        LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                                        LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                                        "EXPIRY_SUGGESTION",
+                                        r.getSku(),
+                                        String.valueOf(r.getShelfLifeDays()),
+                                        r.getName()
+                                });
+                            }
+                            LogReader.exportToFile(exportData, "EXPIRY_SUGGESTION");
+                        }
+                    }
+                    break;
 
                 case "exit":
                     System.out.println("Saving and Exiting Inventory System. Goodbye!");

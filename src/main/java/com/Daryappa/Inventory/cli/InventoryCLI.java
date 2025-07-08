@@ -6,6 +6,7 @@ import com.Daryappa.Inventory.model.InsufficientStockException;
 import com.Daryappa.Inventory.model.ItemNotFoundException;
 import com.Daryappa.Inventory.service.InventoryManager;
 import com.Daryappa.Inventory.utils.FileHandler;
+import com.Daryappa.Inventory.utils.LogReader;
 import com.Daryappa.Inventory.utils.TransactionLogger;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class InventoryCLI {
         System.out.println("📦 Welcome to Inventory Management System");
 
         while (true) {
-            System.out.println("\nChoose an option: add | sell | receive | list | exit");
+            System.out.println("\nChoose an option: add | sell | receive | list | export action | export date | exit");
             System.out.print(">> ");
             String command = scanner.nextLine().trim().toLowerCase();
 
@@ -94,6 +95,29 @@ public class InventoryCLI {
                         }
                     }
                     break;
+                case "export action":
+                    System.out.print("Enter action (ADDED / SOLD / RESTOCKED): ");
+                    String action = scanner.nextLine().trim().toUpperCase();
+                    List<String[]> filteredByAction = LogReader.filterByAction("log.csv", action);
+                    if (filteredByAction.isEmpty()) {
+                        System.out.println("No logs found for action: " + action);
+                    } else {
+                        LogReader.exportToFile(filteredByAction, action);
+                    }
+                    break;
+
+                case "export date":
+                    System.out.print("Enter date (dd-MM-yyyy): ");
+                    String date = scanner.nextLine().trim();
+                    List<String[]> filteredByDate = LogReader.filterByDate("log.csv", date);
+                    if (filteredByDate.isEmpty()) {
+                        System.out.println("No logs found on date: " + date);
+                    } else {
+                        LogReader.exportToFile(filteredByDate, "FILTERED");
+                    }
+                    break;
+
+
 
                 case "exit":
                     System.out.println("Saving and Exiting Inventory System. Goodbye!");

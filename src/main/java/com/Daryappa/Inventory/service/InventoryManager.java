@@ -1,10 +1,12 @@
 package com.Daryappa.Inventory.service;
 
 import com.Daryappa.Inventory.ds.HashTable;
+import com.Daryappa.Inventory.ds.PriorityQueue;
 import com.Daryappa.Inventory.model.InsufficientStockException;
 import com.Daryappa.Inventory.model.InventoryRecord;
 import com.Daryappa.Inventory.model.ItemNotFoundException;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 //import com.Daryappa.Inventory.model.InventoryRecord;
@@ -54,6 +56,46 @@ public class InventoryManager implements IInventoryManager {
     }
     public HashTable<String, InventoryRecord> getInventory() {
         return inventory;
+    }
+
+    public List<InventoryRecord> suggestRestocks(int count) {
+        PriorityQueue<InventoryRecord> pq = new PriorityQueue<>();
+        List<InventoryRecord> items = inventory.getAllInventory();
+        List<Integer> priorities = new ArrayList<>();
+        List<InventoryRecord> result = new ArrayList<>();
+
+        for (InventoryRecord item : items) {
+            int threshold = item.getReorderThreshold();
+            int priority;
+            // if threshold is 0, treat it as urgent (high priority)
+            if (threshold == 0) {
+                priority = 0;
+            } else {
+                priority = item.getQuantity() * 100 / threshold;  // multiply for better resolution
+            }
+            priorities.add(priority);
+        }
+        pq.heapify(items, priorities);
+        for (int i = 0; i < count && !pq.isEmpty(); i++) {
+            result.add(pq.poll());
+        }
+        return result;
+    }
+
+    public List<InventoryRecord> suggestExpiringSoon(int count){
+        PriorityQueue<InventoryRecord> pq = new PriorityQueue<>();
+        List<InventoryRecord> items = inventory.getAllInventory();
+        List<Integer> priorities = new ArrayList<>();
+        List<InventoryRecord> result = new ArrayList<>();
+
+        for (InventoryRecord item : items) {
+            priorities.add(item.getShelfLifeDays());
+        }
+        pq.heapify(items, priorities);
+        for (int i = 0; i < count && !pq.isEmpty(); i++) {
+            result.add(pq.poll());
+        }
+        return result;
     }
 
 

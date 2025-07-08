@@ -99,4 +99,13 @@ public class HashTable<K,V> {
         }
     return keys;
     }
+    public List<V> getAllInventory(){
+        List<V> result=new ArrayList<>();
+        for (List<Node<K,V>> nodeList: buckets){
+            for (Node<K,V> node: nodeList){
+                result.add(node.value);
+            }
+        }
+        return result;
+    }
 }

@@ -44,11 +44,11 @@ public class LogReader {
 
     public static void exportToFile(List<String[]> data, String action) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH-mm-ss");
 
         String date = LocalDate.now().format(dateFormatter);
         String time = LocalTime.now().format(timeFormatter);
-        String exportDirectory="src/main/java/com/Daryappa/Inventory/exports";
+        String exportDirectory="C:/Users/Daryappa mane/IdeaProjects/Inventory Maneger/src/main/java/com/Daryappa/Inventory/exports";
         String exportPath= exportDirectory+"/"+action.toUpperCase()+ "_" + date+ "_" + time + ".csv";
         try (FileWriter writer = new FileWriter(exportPath)) {
             writer.write("Date,Time,Action,SKU,Quantity,ItemName\n");

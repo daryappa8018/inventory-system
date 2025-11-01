@@ -36,3 +36,22 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Sensitive Information - DO NOT COMMIT ###
+# Database configuration with passwords
+src/main/resources/database.properties
+
+### Application Data ###
+# Uncomment if you don't want to track data files
+# inventory.csv
+# log.csv
+
+# Export files
+src/main/java/com/Daryappa/Inventory/exports/*.csv
+
+### Temporary Files ###
+*.tmp
+*.bak
+*.swp
+*~
+*.log

@@ -1,20 +1,20 @@
 package com.Daryappa.Inventory.cli;
 
-import com.Daryappa.Inventory.ds.HashTable;
-import com.Daryappa.Inventory.model.InventoryRecord;
-import com.Daryappa.Inventory.model.InsufficientStockException;
-import com.Daryappa.Inventory.model.ItemNotFoundException;
-import com.Daryappa.Inventory.service.InventoryManager;
-import com.Daryappa.Inventory.utils.FileHandler;
-import com.Daryappa.Inventory.utils.LogReader;
-import com.Daryappa.Inventory.utils.TransactionLogger;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import com.Daryappa.Inventory.ds.HashTable;
+import com.Daryappa.Inventory.model.InsufficientStockException;
+import com.Daryappa.Inventory.model.InventoryRecord;
+import com.Daryappa.Inventory.model.ItemNotFoundException;
+import com.Daryappa.Inventory.service.InventoryManager;
+import com.Daryappa.Inventory.utils.FileHandler;
+import com.Daryappa.Inventory.utils.LogReader;
+import com.Daryappa.Inventory.utils.TransactionLogger;
 
 public class InventoryCLI {
 
@@ -28,7 +28,7 @@ public class InventoryCLI {
         System.out.println("📦 Welcome to Inventory Management System");
 
         while (true) {
-            System.out.println("\nChoose an option: add | sell | receive | list | suggest restock | suggest expiry | export action | export date | exit");
+            System.out.println("\nChoose an option: add | sell | receive | view all | list low stock | suggest restock | suggest expiry | export action | export date | exit");
             System.out.print(">> ");
             String command = scanner.nextLine().trim().toLowerCase();
 
@@ -54,7 +54,7 @@ public class InventoryCLI {
                         manager.addItem(item);
                         TransactionLogger.log("ADDED", sku, qty, name);
 
-                        System.out.println("Item added successfully.");
+                        System.out.println("✅ Item added successfully.");
                     } catch (NumberFormatException e) {
                         System.out.println("❌ Error: Please enter valid numbers for quantity, threshold, and shelf life.");
                     }
@@ -71,7 +71,7 @@ public class InventoryCLI {
                         try {
                             manager.sellItem(sellSku, sellQty);
                             TransactionLogger.log("SOLD", sellSku, sellQty, null);
-                            System.out.println("Item sold successfully.");
+                            System.out.println("✅ Item sold successfully.");
                         } catch (InsufficientStockException | ItemNotFoundException e) {
                             System.out.println("❌ Error: " + e.getMessage());
                         }
@@ -91,7 +91,7 @@ public class InventoryCLI {
                         try {
                             manager.receiveStock(receiveSku, receiveQty);
                             TransactionLogger.log("RESTOCKED", receiveSku, receiveQty, null);
-                            System.out.println("Stock updated successfully.");
+                            System.out.println("✅ Stock updated successfully.");
                         } catch (ItemNotFoundException e) {
                             System.out.println("❌ Error: " + e.getMessage());
                         }
@@ -100,12 +100,28 @@ public class InventoryCLI {
                     }
                     break;
 
+                case "view all":
+                    HashTable<String, InventoryRecord> inventory = manager.getInventory();
+                    List<InventoryRecord> allItems = inventory.getAllInventory();
+                    if (allItems.isEmpty()) {
+                        System.out.println("📦 No items in inventory.");
+                    } else {
+                        System.out.println("📦 All Items in Inventory (" + allItems.size() + " items):");
+                        System.out.println("─".repeat(80));
+                        for (InventoryRecord item : allItems) {
+                            System.out.println(item);
+                        }
+                        System.out.println("─".repeat(80));
+                    }
+                    break;
+
                 case "list":
+                case "list low stock":
                     List<InventoryRecord> lowStockItems = manager.listLowStock();
                     if (lowStockItems.isEmpty()) {
-                        System.out.println("All items are sufficiently stocked.");
+                        System.out.println("✅ All items are sufficiently stocked.");
                     } else {
-                        System.out.println("Low Stock Items:");
+                        System.out.println("⚠️ Low Stock Items:");
                         for (InventoryRecord r : lowStockItems) {
                             System.out.println(r);
                         }

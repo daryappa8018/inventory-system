@@ -1,9 +1,4 @@
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\cli\InventoryCLI.java
-C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\cli\InventoryCLIDB.java
-C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\db\DatabaseConfig.java
-C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\db\DatabaseInitializer.java
-C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\db\InventoryDAO.java
-C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\db\TransactionLogDAO.java
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\ds\HashTable.java
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\ds\PriorityQueue.java
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\Main.java
@@ -12,9 +7,6 @@ C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\model\ItemNotFoundException.java
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\service\IInventoryManager.java
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\service\InventoryManager.java
-C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\service\InventoryManagerDB.java
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\utils\FileHandler.java
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\utils\LogReader.java
-C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\utils\LogReaderDB.java
 C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\utils\TransactionLogger.java
-C:\Users\Daryappa mane\IdeaProjects\Inventory Maneger\src\main\java\com\Daryappa\Inventory\utils\TransactionLoggerDB.java

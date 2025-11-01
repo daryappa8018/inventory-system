@@ -34,57 +34,69 @@ public class InventoryCLI {
 
             switch (command) {
                 case "add":
-                    System.out.print("Enter SKU: ");
-                    String sku = scanner.nextLine();
+                    try {
+                        System.out.print("Enter SKU: ");
+                        String sku = scanner.nextLine();
 
-                    System.out.print("Enter item name: ");
-                    String name = scanner.nextLine();
+                        System.out.print("Enter item name: ");
+                        String name = scanner.nextLine();
 
-                    System.out.print("Enter quantity: ");
-                    int qty = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Enter quantity: ");
+                        int qty = Integer.parseInt(scanner.nextLine());
 
-                    System.out.print("Enter reorder threshold: ");
-                    int threshold = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Enter reorder threshold: ");
+                        int threshold = Integer.parseInt(scanner.nextLine());
 
-                    System.out.print("Enter shelf life in days: ");
-                    int shelfLife = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Enter shelf life in days: ");
+                        int shelfLife = Integer.parseInt(scanner.nextLine());
 
-                    InventoryRecord item = new InventoryRecord(sku, name, qty, threshold, shelfLife);
-                    manager.addItem(item);
-                    TransactionLogger.log("ADDED", sku, qty, name);
+                        InventoryRecord item = new InventoryRecord(sku, name, qty, threshold, shelfLife);
+                        manager.addItem(item);
+                        TransactionLogger.log("ADDED", sku, qty, name);
 
-                    System.out.println("Item added successfully.");
+                        System.out.println("Item added successfully.");
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ Error: Please enter valid numbers for quantity, threshold, and shelf life.");
+                    }
                     break;
 
                 case "sell":
-                    System.out.print("Enter SKU: ");
-                    String sellSku = scanner.nextLine();
-
-                    System.out.print("Enter quantity to sell: ");
-                    int sellQty = Integer.parseInt(scanner.nextLine());
-
                     try {
-                        manager.sellItem(sellSku, sellQty);
-                        TransactionLogger.log("SOLD", sellSku, sellQty, null);
-                        System.out.println("Item sold successfully.");
-                    } catch (InsufficientStockException | ItemNotFoundException e) {
-                        System.out.println(" Error: " + e.getMessage());
+                        System.out.print("Enter SKU: ");
+                        String sellSku = scanner.nextLine();
+
+                        System.out.print("Enter quantity to sell: ");
+                        int sellQty = Integer.parseInt(scanner.nextLine());
+
+                        try {
+                            manager.sellItem(sellSku, sellQty);
+                            TransactionLogger.log("SOLD", sellSku, sellQty, null);
+                            System.out.println("Item sold successfully.");
+                        } catch (InsufficientStockException | ItemNotFoundException e) {
+                            System.out.println("❌ Error: " + e.getMessage());
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ Error: Please enter a valid number for quantity.");
                     }
                     break;
 
                 case "receive":
-                    System.out.print("Enter SKU: ");
-                    String receiveSku = scanner.nextLine();
-
-                    System.out.print("Enter quantity to receive: ");
-                    int receiveQty = Integer.parseInt(scanner.nextLine());
-
                     try {
-                        manager.receiveStock(receiveSku, receiveQty);
-                        TransactionLogger.log("RESTOCKED", receiveSku, receiveQty, null);
-                        System.out.println("Stock updated successfully.");
-                    } catch (ItemNotFoundException e) {
-                        System.out.println(" Error: " + e.getMessage());
+                        System.out.print("Enter SKU: ");
+                        String receiveSku = scanner.nextLine();
+
+                        System.out.print("Enter quantity to receive: ");
+                        int receiveQty = Integer.parseInt(scanner.nextLine());
+
+                        try {
+                            manager.receiveStock(receiveSku, receiveQty);
+                            TransactionLogger.log("RESTOCKED", receiveSku, receiveQty, null);
+                            System.out.println("Stock updated successfully.");
+                        } catch (ItemNotFoundException e) {
+                            System.out.println("❌ Error: " + e.getMessage());
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ Error: Please enter a valid number for quantity.");
                     }
                     break;
 
@@ -124,66 +136,74 @@ public class InventoryCLI {
 
 
                 case "suggest restock":
-                    System.out.print("How many top urgent items to suggest?: ");
-                    int restockCount = Integer.parseInt(scanner.nextLine());
+                    try {
+                        System.out.print("How many top urgent items to suggest?: ");
+                        int restockCount = Integer.parseInt(scanner.nextLine());
 
-                    List<InventoryRecord> restockSuggestions = manager.suggestRestocks(restockCount);
-                    if (restockSuggestions.isEmpty()) {
-                        System.out.println("✅ All items are sufficiently stocked.");
-                    } else {
-                        System.out.println("🔻 Top " + restockCount + " items needing restock:");
-                        for (InventoryRecord r : restockSuggestions) {
-                            System.out.println(r);
-                        }
-
-                        System.out.print("Do you want to export to CSV? (yes/no): ");
-                        String exportChoice1 = scanner.nextLine().trim().toLowerCase();
-                        if (exportChoice1.equals("yes")) {
-                            List<String[]> exportData = new ArrayList<>();
+                        List<InventoryRecord> restockSuggestions = manager.suggestRestocks(restockCount);
+                        if (restockSuggestions.isEmpty()) {
+                            System.out.println("✅ All items are sufficiently stocked.");
+                        } else {
+                            System.out.println("🔻 Top " + restockCount + " items needing restock:");
                             for (InventoryRecord r : restockSuggestions) {
-                                exportData.add(new String[] {
-                                        LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                                        LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-                                        "RESTOCK_SUGGESTION",
-                                        r.getSku(),
-                                        String.valueOf(r.getQuantity()),
-                                        r.getName()
-                                });
+                                System.out.println(r);
                             }
-                            LogReader.exportToFile(exportData, "RESTOCK_SUGGESTION");
+
+                            System.out.print("Do you want to export to CSV? (yes/no): ");
+                            String exportChoice1 = scanner.nextLine().trim().toLowerCase();
+                            if (exportChoice1.equals("yes")) {
+                                List<String[]> exportData = new ArrayList<>();
+                                for (InventoryRecord r : restockSuggestions) {
+                                    exportData.add(new String[] {
+                                            LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                                            LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                                            "RESTOCK_SUGGESTION",
+                                            r.getSku(),
+                                            String.valueOf(r.getQuantity()),
+                                            r.getName()
+                                    });
+                                }
+                                LogReader.exportToFile(exportData, "RESTOCK_SUGGESTION");
+                            }
                         }
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ Error: Please enter a valid number for count.");
                     }
                     break;
 
                 case "suggest expiry":
-                    System.out.print("How many soon-to-expire items to suggest?: ");
-                    int expiryCount = Integer.parseInt(scanner.nextLine());
+                    try {
+                        System.out.print("How many soon-to-expire items to suggest?: ");
+                        int expiryCount = Integer.parseInt(scanner.nextLine());
 
-                    List<InventoryRecord> expiringSuggestions = manager.suggestExpiringSoon(expiryCount);
-                    if (expiringSuggestions.isEmpty()) {
-                        System.out.println("✅ No items are close to expiry.");
-                    } else {
-                        System.out.println("⏳ Top " + expiryCount + " expiring soon items:");
-                        for (InventoryRecord r : expiringSuggestions) {
-                            System.out.println(r);
-                        }
-
-                        System.out.print("Do you want to export to CSV? (yes/no): ");
-                        String exportChoice2 = scanner.nextLine().trim().toLowerCase();
-                        if (exportChoice2.equals("yes")) {
-                            List<String[]> exportData = new ArrayList<>();
+                        List<InventoryRecord> expiringSuggestions = manager.suggestExpiringSoon(expiryCount);
+                        if (expiringSuggestions.isEmpty()) {
+                            System.out.println("✅ No items are close to expiry.");
+                        } else {
+                            System.out.println("⏳ Top " + expiryCount + " expiring soon items:");
                             for (InventoryRecord r : expiringSuggestions) {
-                                exportData.add(new String[] {
-                                        LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                                        LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
-                                        "EXPIRY_SUGGESTION",
-                                        r.getSku(),
-                                        String.valueOf(r.getShelfLifeDays()),
-                                        r.getName()
-                                });
+                                System.out.println(r);
                             }
-                            LogReader.exportToFile(exportData, "EXPIRY_SUGGESTION");
+
+                            System.out.print("Do you want to export to CSV? (yes/no): ");
+                            String exportChoice2 = scanner.nextLine().trim().toLowerCase();
+                            if (exportChoice2.equals("yes")) {
+                                List<String[]> exportData = new ArrayList<>();
+                                for (InventoryRecord r : expiringSuggestions) {
+                                    exportData.add(new String[] {
+                                            LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+                                            LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                                            "EXPIRY_SUGGESTION",
+                                            r.getSku(),
+                                            String.valueOf(r.getShelfLifeDays()),
+                                            r.getName()
+                                    });
+                                }
+                                LogReader.exportToFile(exportData, "EXPIRY_SUGGESTION");
+                            }
                         }
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ Error: Please enter a valid number for count.");
                     }
                     break;
 
